@@ -1,0 +1,38 @@
+{
+  "name": "glowhash",
+  "version": "0.1.0",
+  "description": "Browser decoder for glowhash, blurred image placeholders that keep colours and transparency: hash to RGBA pixels",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nxara-hub/glowhash.git",
+    "directory": "packages/glowhash"
+  },
+  "keywords": [
+    "blurhash",
+    "thumbhash",
+    "placeholder",
+    "image",
+    "transparency",
+    "blur"
+  ],
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "node --test",
+    "prepublishOnly": "tsc"
+  }
+}

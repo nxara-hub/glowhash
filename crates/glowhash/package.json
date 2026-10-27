@@ -1,0 +1,8 @@
+{
+  "name": "@glowhash/rust",
+  "private": true,
+  "scripts": {
+    "build": "cargo build --release --all-features",
+    "test": "cargo test --release --all-features"
+  }
+}

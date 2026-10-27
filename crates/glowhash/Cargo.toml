@@ -1,0 +1,31 @@
+[package]
+name = "glowhash"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Blurred image placeholders that keep colours, with real transparency: a short URL-safe hash, decoded to RGBA pixels"
+readme = "README.md"
+exclude = ["tests/", "package.json"]
+keywords = ["blurhash", "placeholder", "image", "transparency", "blur"]
+categories = ["multimedia::images", "encoding"]
+
+[dependencies]
+jpeg-decoder = { version = "0.3.2", default-features = false, optional = true }
+
+[features]
+# encode_jpeg: decode JPEG files at reduced size (up to 1/8) before hashing, for bulk jobs.
+jpeg = ["dep:jpeg-decoder"]
+
+[dev-dependencies]
+image = { version = "0.25.10", default-features = false, features = ["png", "jpeg", "webp", "tiff"] }
+rayon = "1.12.0"
+
+[[example]]
+name = "bulk"
+required-features = ["jpeg"]
+
+[[example]]
+name = "speed"
+required-features = ["jpeg"]

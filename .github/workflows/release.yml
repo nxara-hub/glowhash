@@ -1,0 +1,72 @@
+# Push a tag like v0.1.0 to publish @glowhash/node (with a prebuilt binary per platform) and
+# glowhash to npm, through trusted publishing: each package trusts this workflow, so no token.
+name: Release
+on:
+  push:
+    tags: ['v*']
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - { os: macos-latest, target: aarch64-apple-darwin }
+          - { os: macos-latest, target: x86_64-apple-darwin }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-gnu }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-gnu, flags: --use-napi-cross }
+          - { os: ubuntu-latest, target: x86_64-unknown-linux-musl, flags: -x }
+          - { os: ubuntu-latest, target: aarch64-unknown-linux-musl, flags: -x }
+          - { os: windows-latest, target: x86_64-pc-windows-msvc }
+          - { os: windows-latest, target: aarch64-pc-windows-msvc }
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: oven-sh/setup-bun@v2
+      - uses: mlugg/setup-zig@v2
+        if: contains(matrix.target, 'musl')
+      - if: contains(matrix.target, 'musl')
+        run: cargo install --locked cargo-zigbuild
+      - run: bun install --frozen-lockfile
+      - run: bunx napi build --platform --release --target ${{ matrix.target }} ${{ matrix.flags }}
+        working-directory: crates/glowhash-node
+      - uses: actions/upload-artifact@v7
+        with:
+          name: bindings-${{ matrix.target }}
+          path: crates/glowhash-node/*.node
+          if-no-files-found: error
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm trusted publishing (OIDC)
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@11.19.1
+      - run: bun install --frozen-lockfile
+      - run: bun run test
+      - uses: actions/download-artifact@v8
+        with:
+          path: crates/glowhash-node/artifacts
+          merge-multiple: true
+      - name: Publish @glowhash/node, its platform packages and glowhash
+        run: |
+          cd crates/glowhash-node
+          bunx napi create-npm-dirs
+          bunx napi artifacts
+          bunx napi pre-publish -t npm --skip-optional-publish --no-gh-release
+          for dir in npm/*/; do (cd "$dir" && npm publish); done
+          npm publish
+          cd ../../packages/glowhash
+          npm publish

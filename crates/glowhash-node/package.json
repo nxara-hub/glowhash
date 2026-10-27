@@ -1,0 +1,52 @@
+{
+  "name": "@glowhash/node",
+  "version": "0.1.0",
+  "description": "glowhash for Node.js, in native Rust: encode image files or pixels into blurred placeholders that keep colours and transparency, and decode them",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nxara-hub/glowhash.git",
+    "directory": "crates/glowhash-node"
+  },
+  "keywords": [
+    "blurhash",
+    "thumbhash",
+    "placeholder",
+    "image",
+    "transparency",
+    "blur",
+    "napi-rs"
+  ],
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "napi": {
+    "binaryName": "glowhash",
+    "targets": [
+      "aarch64-apple-darwin",
+      "x86_64-apple-darwin",
+      "x86_64-unknown-linux-gnu",
+      "aarch64-unknown-linux-gnu",
+      "x86_64-unknown-linux-musl",
+      "aarch64-unknown-linux-musl",
+      "x86_64-pc-windows-msvc",
+      "aarch64-pc-windows-msvc"
+    ]
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "napi build --platform --release",
+    "test": "node --test"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "3.10.9"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

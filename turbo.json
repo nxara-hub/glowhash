@@ -1,0 +1,24 @@
+{
+  "$schema": "https://turborepo.com/schema.json",
+  "agentGuidance": false,
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "test": {
+      "dependsOn": ["build"],
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/spec/vectors.json"]
+    },
+    "@glowhash/rust#build": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/Cargo.toml", "$TURBO_ROOT$/Cargo.lock"]
+    },
+    "@glowhash/rust#test": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/Cargo.toml", "$TURBO_ROOT$/Cargo.lock", "$TURBO_ROOT$/spec/vectors.json"]
+    },
+    "@glowhash/node#build": {
+      "inputs": ["$TURBO_DEFAULT$", "$TURBO_ROOT$/crates/glowhash/src/**", "$TURBO_ROOT$/crates/glowhash/Cargo.toml", "$TURBO_ROOT$/Cargo.lock"],
+      "outputs": ["index.js", "index.d.ts", "*.node"]
+    }
+  }
+}

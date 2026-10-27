@@ -1,0 +1,19 @@
+[package]
+name = "glowhash-node"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+glowhash = { path = "../glowhash", features = ["jpeg"] }
+image = { version = "0.25.10", default-features = false, features = ["png", "webp", "tiff"] }
+napi = "3.15.0"
+napi-derive = "3.6.13"
+
+[build-dependencies]
+napi-build = "2.6.0"
